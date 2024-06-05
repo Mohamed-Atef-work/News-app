@@ -8,10 +8,10 @@ import 'package:news/core/dataBase/remote/dio_helper.dart';
 import 'package:news/core/dataBase/remote/end_points.dart';
 import 'package:news/l10n/app_localizations.dart';
 import 'package:news/screens/Home/controller/states.dart';
-import 'package:news/screens/HomeScreens/business/view.dart';
-import 'package:news/screens/HomeScreens/categories/view.dart';
-import 'package:news/screens/HomeScreens/regionNews/view.dart';
-import 'package:news/screens/HomeScreens/search/view.dart';
+import 'package:news/screens/home_screens/business/view.dart';
+import 'package:news/screens/home_screens/categories/view.dart';
+import 'package:news/screens/home_screens/regionNews/view.dart';
+import 'package:news/screens/home_screens/search/view.dart';
 
 import '../../../core/dataBase/local/constants.dart';
 import '../../register/model.dart';
@@ -21,62 +21,12 @@ class HomeController extends Cubit<HomeStates> {
 
   static HomeController get(context) => BlocProvider.of(context);
 
-  late final TextEditingController searchController = TextEditingController();
-  late final GlobalKey<FormState> searchFormKey = GlobalKey<FormState>();
+  final TextEditingController searchController = TextEditingController();
+  final GlobalKey<FormState> searchFormKey = GlobalKey<FormState>();
 
-  late FirebaseFirestore fireStore = FirebaseFirestore.instance;
+  FirebaseFirestore fireStore = FirebaseFirestore.instance;
 
   int currentIndex = 0;
-/*  List<BottomNavigationBarItem> bottomItems = [
-    const BottomNavigationBarItem(
-      icon: Icon(IconlyBold.location),
-      label: "Region",
-    ),
-    const BottomNavigationBarItem(
-      icon: Icon(IconlyBold.work),
-      label: "Business",
-    ),
-    const BottomNavigationBarItem(
-      icon: Icon(Icons.category_rounded),
-      label: "Categories",
-    ),
-    const BottomNavigationBarItem(
-      icon: Icon(IconlyLight.search),
-      label: "Search",
-    ),
-  ];*/
-
-  /*String getLabel({
-    required int index,
-    required BuildContext context,
-  }) {
-    String label = "";
-    switch (index) {
-      case 0:
-        {
-          AppLocalizations.of(context)!.general;
-          break;
-        }
-      case 1:
-        {
-          AppLocalizations.of(context)!.business;
-
-          break;
-        }
-      case 2:
-        {
-          AppLocalizations.of(context)!.categories;
-
-          break;
-        }
-      case 3:
-        {
-          AppLocalizations.of(context)!.search;
-          break;
-        }
-    }
-    return label;
-  }*/
 
   List<Widget> screens = [
     RegionScreen(),
@@ -130,29 +80,38 @@ class HomeController extends Cubit<HomeStates> {
     switch (index) {
       case 0:
         {
+          page = 1;
+          isPaginationLoading = false;
+          isEndPagination = false;
           emit(RegionChangeBottomNavState());
         }
         break;
       case 1:
         {
+          page = 1;
+          isEndPagination = false;
+          isPaginationLoading = false;
           emit(BusinessChangeBottomNavState());
-          if (articlesBusinessResponse == null) {
-            getArticles(
-              category: "business",
-              country: country,
-            );
+          if (businessArticles.isEmpty) {
+            getArticles(category: "business", country: country);
           }
         }
         break;
 
       case 2:
         {
+          page = 1;
+          isEndPagination = false;
+          isPaginationLoading = false;
           emit(AllCategoriesChangeBottomNavState());
         }
         break;
 
       case 3:
         {
+          page = 1;
+          isEndPagination = false;
+          isPaginationLoading = false;
           emit(SearchChangeBottomNavState());
         }
         break;
@@ -160,100 +119,81 @@ class HomeController extends Cubit<HomeStates> {
   }
 
   void goReadTheArticle({
-    //required int index,
     required BuildContext context,
     required String url,
   }) {
     navigateTo(
-        context: context,
-        widget: WebViewScreen(
-          url: url,
-        ));
+      context: context,
+      widget: WebViewScreen(url: url),
+    );
   }
 
   // Rejoin
 
-  ArticlesResponse? articlesRegionResponse;
+  List<Articles> regionArticles = [];
   late List<bool> isBookedRegion;
 
-  ArticlesResponse? articlesBusinessResponse;
+  List<Articles> businessArticles = [];
   late List<bool> isBookedBusiness;
 
-  ArticlesResponse? articlesCategoryResponse;
+  List<Articles> articlesOfCategory = [];
   late List<bool> isBookedCategory;
 
-  ArticlesResponse? articlesSearchResponse;
+  List<Articles> searchArticles = [];
   late List<bool> isBookedSearch;
+
+  final searchScrollController = ScrollController();
+  void scrollListener() {
+    final currentLength = searchScrollController.position.pixels;
+    final maxLength = searchScrollController.position.maxScrollExtent;
+    if (currentLength > maxLength * 0.85) {
+      if (!isPaginationLoading && !isEndPagination) {
+        isPaginationLoading = true;
+        print("page ---------------------------------------------- > $page");
+        print(" ---------------- in the method ---------------------------");
+        getArticles(
+          url: EVERYTHING,
+          category: "search",
+          keyWord: searchController.text,
+        );
+      }
+    }
+  }
+
+  int page = 1;
+  bool isEndPagination = false;
+  bool isPaginationLoading = false;
 
   void getArticles({
     required String category,
+    String? keyWord,
     String? country,
     String? url,
-    String? keyWord,
-  }) {
-    emit(GetArticlesLoadingState());
-    DioHelper.getData(
-      url: url ?? TOPHEADLINES,
-      query: {
-        if (category != "search") "country": country ?? "eg",
-        if (category != "search") "category": category,
-        if (category == "search") "q": keyWord,
-        "apiKey": "40e8e5accae049fda753f567995efc4a",
-      },
-    ).then((value) {
-      switch (category) {
-        case "business":
-          {
-            articlesBusinessResponse = ArticlesResponse.fromJson(value.data);
-            isBookedBusiness = List.generate(
-                articlesBusinessResponse!.totalResults, (index) => false);
-            emit(GetArticlesSuccessState());
-          }
-          break;
+  }) async {
+    try {
+      emit(GetArticlesLoadingState());
+      print("------------------Loading ---------------------------");
 
-        case "general":
-          {
-            articlesRegionResponse = ArticlesResponse.fromJson(value.data);
-            isBookedRegion = List.generate(
-                articlesRegionResponse!.totalResults, (index) => false);
-            emit(GetArticlesSuccessState());
-          }
-          break;
+      final value = await DioHelper.getData(
+        url: url ?? TOPHEADLINES,
+        query: _query(country, category, keyWord),
+      );
 
-        case "search":
-          {
-            articlesSearchResponse = ArticlesResponse.fromJson(value.data);
-            isBookedSearch = List.generate(
-                articlesSearchResponse!.totalResults, (index) => false);
-
-            if (articlesSearchResponse!.totalResults == 0) {}
-
-            emit(GetArticlesSuccessState());
-          }
-          break;
-
-        default:
-          {
-            articlesCategoryResponse = ArticlesResponse.fromJson(value.data);
-            isBookedCategory = List.generate(
-                articlesCategoryResponse!.totalResults, (index) => false);
-            emit(GetArticlesSuccessState());
-          }
-          break;
-      }
-    }).catchError((error) {
-      print(
-          "get region articles Error is -----------------> ${error.toString()}");
+      final totalResults = _data(category, value);
+      _paginationSuccessHelper(totalResults);
+      emit(GetArticlesSuccessState());
+    } catch (e) {
+      isPaginationLoading = false;
+      isEndPagination = true;
+      print("get articles Error is -----------------> ${e.toString()}");
       emit(GetArticlesErrorState());
-    });
+    }
   }
 
   UserModel? userModel;
 
   void getUser() {
     emit(GetUserLoadingState());
-
-    // get user
     fireStore.collection("users").doc(uId).get().then((value) {
       userModel = UserModel.fromJson(value.data()!);
       emit(GetUserSuccessState());
@@ -261,5 +201,86 @@ class HomeController extends Cubit<HomeStates> {
       print("The error is --------------->${error.toString()}");
       emit(GetUserErrorState());
     });
+  }
+
+  _query(String? country, String? category, String? keyWord) => {
+        "page": page,
+        "pageSize": 20,
+        if (category != "search") ...{
+          "country": country ?? "eg",
+          "category": category,
+        },
+        if (category == "search") "q": keyWord,
+        "apiKey": "2fa3c76635c046498f322bb7e7ff4484",
+        //40e8e5accae049fda753f567995efc4a
+      };
+
+  int _data(String category, value) {
+    final response = ArticlesResponse.fromJson(value.data);
+    final totalResults = response.totalResults;
+    print("total results --------------------->$totalResults");
+
+    final isBooked = List.generate(totalResults, (index) => false);
+
+    switch (category) {
+      case "business":
+        {
+          businessArticles = [];
+          isBookedBusiness = [];
+          businessArticles.addAll(response.articles);
+          isBookedBusiness = isBooked;
+        }
+        break;
+
+      case "general":
+        {
+          regionArticles = [];
+          isBookedRegion = [];
+          regionArticles.addAll(response.articles);
+          isBookedRegion = isBooked;
+        }
+        break;
+
+      case "search":
+        {
+          searchArticles.addAll(response.articles);
+          if (isBookedSearch.isEmpty) {
+            isBookedSearch = isBooked;
+          }
+        }
+        break;
+
+      default:
+        {
+          articlesOfCategory = [];
+          isBookedCategory = [];
+          articlesOfCategory.addAll(response.articles);
+          isBookedCategory = isBooked;
+        }
+        break;
+    }
+    return totalResults;
+  }
+
+  void _paginationSuccessHelper(int totalResults) {
+    isPaginationLoading = false;
+
+    final maxPages = totalResults ~/ 20;
+
+    if (totalResults % 20 != 0) {
+      if (page < maxPages + 1) {
+        page++;
+      }
+      if (page == maxPages + 1) {
+        isEndPagination = true;
+      }
+    } else {
+      if (page < maxPages) {
+        page++;
+      }
+      if (page == maxPages) {
+        isEndPagination = true;
+      }
+    }
   }
 }

@@ -6,46 +6,39 @@ import 'package:news/screens/Home/controller/controller.dart';
 import 'package:news/screens/Home/controller/states.dart';
 import 'package:news/screens/Home/widgets/bottomNavItem.dart';
 
-import '../HomeScreens/drawer/view.dart';
+import '../home_screens/drawer/view.dart';
 
 class HomeLayOutScreen extends StatelessWidget {
   const HomeLayOutScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<HomeController>(
-          create: (context) => HomeController()
-            ..getArticles(
-              category: "general",
-              country: country,
-            ),
+    return BlocProvider(
+      create: (context) => HomeController()
+        ..getArticles(
+          category: "general",
+          country: country,
         ),
-      ],
-      child: BlocConsumer<HomeController, HomeStates>(
-        listener: (BuildContext context, state) {},
-        builder: (BuildContext context, state) {
+      child: BlocBuilder<HomeController, HomeStates>(
+        builder: (context, state) {
+          final controller = HomeController.get(context);
           return Scaffold(
-            drawer: AppDrawer(),
+            drawer: const AppDrawer(),
             appBar: AppBar(
               title: DefaultText(
-                text: HomeController.get(context).getTitle(
-                  index: HomeController.get(context).currentIndex,
+                text: controller.getTitle(
+                  index: controller.currentIndex,
                   context: context,
                 ),
                 fontSize: 25,
               ),
               actions: [
                 IconButton(
-                    onPressed: () {
-                      //AppCubit.get(context).changeAppMode();
-                    },
+                    onPressed: () {},
                     icon: const Icon(Icons.brightness_4_outlined)),
               ],
             ),
-            body: HomeController.get(context)
-                .screens[HomeController.get(context).currentIndex],
+            body: controller.screens[controller.currentIndex],
             bottomNavigationBar: BottomNav(),
           );
         },

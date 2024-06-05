@@ -18,35 +18,30 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.orange[800],
+      backgroundColor: const Color(0XFFfb7f01),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 10,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextButton(
-                  onPressed: () {
-                    navigateAndFinish(
-                      context: context,
-                      widget: const LoginScreen(),
-                    );
-                  },
+                  onPressed: () => navigateAndFinish(
+                    context: context,
+                    widget: const LoginScreen(),
+                  ),
                   child: DefaultText(
                     text: AppLocalizations.of(context)!.skip,
-                    fontSize: 20,
                     textColor: Colors.white,
+                    fontSize: 20,
                   ),
                 ),
               ),
               Expanded(
                 child: Center(
                   child: SizedBox(
-                    //width: double.infinity,
                     height: 450,
                     child: PageView(
                       physics: const BouncingScrollPhysics(),
@@ -54,7 +49,6 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                         controller.currentIndex = index;
                         setState(() {});
                       },
-                      //scrollDirection: Axis.horizontal,
                       children: List.generate(
                         controller.images.length,
                         (index) => Column(
@@ -67,21 +61,20 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                               child: Image.asset(
                                 controller.images[controller.currentIndex],
                                 width: double.infinity,
-                                height: 250,
-                                //width: double.infinity,
                                 fit: BoxFit.contain,
+                                height: 250,
                               ),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: DefaultText(
-                                text: controller.getTitle(
-                                  index: index,
-                                  context: context,
-                                ),
-                                fontSize: 30,
                                 fontWeight: FontWeight.w600,
                                 textColor: Colors.white,
+                                text: controller.getTitle(
+                                  context: context,
+                                  index: index,
+                                ),
+                                fontSize: 30,
                               ),
                             ),
                           ],
@@ -108,9 +101,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   ),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
             ],
           ),
         ),

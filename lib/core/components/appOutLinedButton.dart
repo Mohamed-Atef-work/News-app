@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:news/core/styles/colors.dart';
 import 'appText.dart';
 
 class AppOutlinedButton extends StatelessWidget {
@@ -12,7 +13,8 @@ class AppOutlinedButton extends StatelessWidget {
   final Color? textColor;
   final double? elevation;
 
-  AppOutlinedButton({
+  const AppOutlinedButton({
+    super.key,
     required this.onPressed,
     required this.text,
     required this.height,
@@ -27,21 +29,16 @@ class AppOutlinedButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(
-      onPressed: () {
-        onPressed();
-      },
+      onPressed: onPressed,
       style: OutlinedButton.styleFrom(
         fixedSize: Size(width ?? double.maxFinite, height),
         backgroundColor: backgroundColor,
-        /*shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-        ),*/
-        elevation: elevation,
+        elevation: elevation,side: BorderSide(color: secondaryColor)
       ),
       child: DefaultText(
         text: text,
-        fontWeight: fontWeight,
         fontSize: fontSize,
+        fontWeight: fontWeight,
         textColor: textColor ?? Colors.white,
       ),
     );

@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
+
 import 'package:news/l10n/app_localizations.dart';
-import 'package:news/screens/Home/view.dart';
 import 'package:news/screens/bookMark/view.dart';
 import 'package:news/screens/profile/view.dart';
+import 'package:news/screens/Home/view.dart';
 
 class AppDrawerController {
   late BuildContext context;
 
-  AppDrawerController({
-    required this.context,
-  });
+  AppDrawerController({required this.context});
 
   late final List<IconData> icons = [
     Icons.home,

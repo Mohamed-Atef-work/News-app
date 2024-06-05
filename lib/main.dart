@@ -9,17 +9,13 @@ import 'core/styles/themes.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 
-Future<void> main() async {
-  Bloc.observer = MyBlocObserver();
+void main() async {
+  //Bloc.observer = MyBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await CacheHelper.init();
 
-  uId = CacheHelper.getData(
-    key: "uId",
-  );
+  uId = CacheHelper.getData(key: "uId");
   print("The user id is ------------------->${uId}");
   language = CacheHelper.getData(key: "lang");
   print("The user language is ------------------->${language}");
@@ -32,13 +28,13 @@ Future<void> main() async {
   runApp(
     uId != null
         ? BlocProvider<AppController>(
-            create: (context) => AppController()
+            create: (_) => AppController()
               ..getUser()
               ..listenToTheChangesOnMarkedArticles(),
             child: const MyApp(),
           )
         : BlocProvider<AppController>(
-            create: (context) => AppController(),
+            create: (_) => AppController(),
             child: const MyApp(),
           ),
   );
@@ -51,17 +47,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppController, AppStates>(
-      listener: (context, states) {},
+      listener: (_, __) {},
       builder: (context, states) {
         return MaterialApp(
+          theme: lightTheme,
+          home: AppController.get(context).startScreen(),
+          locale: language == null ? null : Locale(language!),
+          supportedLocales: AppLocalizations.supportedLocales,
           title: AppLocalizations.of(context)?.appName ?? "news",
           localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
           localeResolutionCallback: AppController.get(context).localeCallBack,
-          locale: language == null ? null : Locale(language!),
-          home: AppController.get(context).startScreen(),
           //debugShowCheckedModeBanner: false,
-          theme: lightTheme,
           //darkTheme: darkTheme,
         );
       },
@@ -69,7 +65,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyBlocObserver extends BlocObserver {
+/*class MyBlocObserver extends BlocObserver {
   @override
   void onCreate(BlocBase bloc) {
     super.onCreate(bloc);
@@ -93,4 +89,4 @@ class MyBlocObserver extends BlocObserver {
     super.onClose(bloc);
     print('onClose -- ${bloc.runtimeType}');
   }
-}
+}*/

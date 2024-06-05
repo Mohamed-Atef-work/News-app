@@ -20,24 +20,22 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => LoginController(),
+      create: (_) => LoginController(),
       child: Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 0,
-        ),
+        backgroundColor: const Color(0XFFff9100),
+        appBar: AppBar(toolbarHeight: 0),
         body: Center(
           child: BlocConsumer<LoginController, LoginStates>(
             listener: (context, state) {
               if (state is LoginErrorState) {
+                print(state.error);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: DefaultText(
                       text: state.error.substring(30),
                       textAlign: TextAlign.center,
                     ),
-                    duration: const Duration(
-                      seconds: 3,
-                    ),
+                    duration: const Duration(seconds: 3),
                   ),
                 );
               }
@@ -49,17 +47,13 @@ class LoginScreen extends StatelessWidget {
                       LoginController.get(context).userModel;
                 }
                 navigateAndFinish(
-                  context: context,
-                  widget: const HomeLayOutScreen(),
-                );
+                    context: context, widget: const HomeLayOutScreen());
               }
             },
             builder: (context, state) {
               return SingleChildScrollView(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: Form(
                     key: LoginController.get(context).formKey,
                     child: Column(
@@ -73,21 +67,17 @@ class LoginScreen extends StatelessWidget {
                                     color: Colors.black,
                                   ),
                         ),
-                        const SizedBox(
-                          height: 15.0,
-                        ),
+                        const SizedBox(height: 15.0),
                         Text(
                             AppLocalizations.of(context)!
                                 .loginNowAndReadArticles,
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyText1!
-                                .copyWith(color: Colors.grey)),
-                        const SizedBox(
-                          height: 30.0,
-                        ),
+                                .copyWith(color: Colors.white)),
+                        const SizedBox(height: 30.0),
                         CustomTextField(
-                          onSubmitted: (value) {},
+                          onSubmitted: (_) {},
                           controller:
                               LoginController.get(context).emailController,
                           keyboardType: TextInputType.emailAddress,
@@ -101,9 +91,7 @@ class LoginScreen extends StatelessWidget {
                           labelText: AppLocalizations.of(context)!.email,
                           prefixIcon: Icons.email_outlined,
                         ),
-                        const SizedBox(
-                          height: 25.0,
-                        ),
+                        const SizedBox(height: 25.0),
                         CustomTextField(
                           onSubmitted: (value) {},
                           controller:
@@ -132,15 +120,13 @@ class LoginScreen extends StatelessWidget {
                                   ),
                           ),
                         ),
-                        const SizedBox(
-                          height: 25.0,
-                        ),
+                        const SizedBox(height: 25.0),
                         state is LoginLoadingState
-                            ? const Center(
-                                child: CircularProgressIndicator(),
-                              )
+                            ? const Center(child: CircularProgressIndicator())
                             : AppOutlinedButton(
                                 textColor: Colors.white,
+                                height: 50,
+                                text: AppLocalizations.of(context)!.login,
                                 onPressed: () {
                                   if (LoginController.get(context)
                                       .formKey
@@ -156,26 +142,19 @@ class LoginScreen extends StatelessWidget {
                                     );
                                   }
                                 },
-                                height: 50,
-                                //backgroundColor: Colors.deepOrange,
-                                text: AppLocalizations.of(context)!.login,
                               ),
-                        const SizedBox(
-                          height: 10.0,
-                        ),
+                        const SizedBox(height: 10.0),
                         Row(
                           children: [
-                            Text(
-                              AppLocalizations.of(context)!.donNotHaveAnAccount,
-                            ),
+                            Text(AppLocalizations.of(context)!
+                                .donNotHaveAnAccount),
                             AppTextButton(
-                                text: AppLocalizations.of(context)!.register,
-                                onPressed: () {
-                                  navigateTo(
-                                    context: context,
-                                    widget: const RegisterScreen(),
-                                  );
-                                }),
+                              text: AppLocalizations.of(context)!.register,
+                              onPressed: () => navigateTo(
+                                context: context,
+                                widget: const RegisterScreen(),
+                              ),
+                            ),
                           ],
                         ),
                       ],

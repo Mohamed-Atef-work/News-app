@@ -8,10 +8,11 @@ import '../../../core/components/article.dart';
 import '../../Home/controller/controller.dart';
 
 class OneCategoryScreen extends StatelessWidget {
-  late final String categoryForSearch;
-  late final String categoryTitle;
+  final String categoryForSearch;
+  final String categoryTitle;
 
-   OneCategoryScreen({super.key,
+  const OneCategoryScreen({
+    super.key,
     required this.categoryForSearch,
     required this.categoryTitle,
   });
@@ -38,28 +39,22 @@ class OneCategoryScreen extends StatelessWidget {
         },
         builder: (context, state) {
           return Scaffold(
-            appBar: AppBar(
-              title: DefaultText(
-                text: categoryTitle,
-                fontSize: 25,
-              ),
-            ),
-            body: HomeController.get(context).articlesCategoryResponse != null
-                ? ListView.separated(
+            appBar:
+                AppBar(title: DefaultText(text: categoryTitle, fontSize: 25)),
+            body: HomeController.get(context).articlesOfCategory.isNotEmpty
+                ? ListView.builder(
                     physics: const BouncingScrollPhysics(),
                     itemBuilder: (context, index) => ArticleItem(
                       markedArticlesMap: AppController.get(context)
                           .markedArticlesIdsAllCategories,
                       index: index,
                       article: HomeController.get(context)
-                          .articlesCategoryResponse!
-                          .articles[index],
+                          .articlesOfCategory[index],
                       onArticlePressed: () {
                         HomeController.get(context).goReadTheArticle(
                           context: context,
                           url: HomeController.get(context)
-                              .articlesCategoryResponse!
-                              .articles[index]
+                              .articlesOfCategory[index]
                               .url
                               .toString(),
                         );
@@ -79,19 +74,11 @@ class OneCategoryScreen extends StatelessWidget {
                               ? Colors.deepOrange
                               : Colors.black,
                     ),
-                    separatorBuilder: (context, index) => const Divider(
-                      color: Colors.deepOrangeAccent,
-                      endIndent: 30,
-                      indent: 30,
-                    ),
                     itemCount: HomeController.get(context)
-                        .articlesCategoryResponse!
-                        .articles
+                        .articlesOfCategory
                         .length,
                   )
-                : const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                : const Center(child: CircularProgressIndicator()),
           );
         },
       ),

@@ -51,12 +51,11 @@ class RegisterScreen extends StatelessWidget {
         },
         builder: (context, state) {
           return Scaffold(
+            backgroundColor: const Color(0XFFff9100),
             appBar: AppBar(),
             body: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 15),
                 child: SingleChildScrollView(
                   child: Form(
                     key: RegisterController.get(context).formKey,
@@ -69,15 +68,13 @@ class RegisterScreen extends StatelessWidget {
                               .headline4
                               ?.copyWith(color: Colors.black),
                         ),
-                        const SizedBox(
-                          height: 10.0,
-                        ),
+                        const SizedBox(height: 10.0),
                         Text(
                           AppLocalizations.of(context)!
                               .registerNowAndConnectToTheWorld,
                           style:
                               Theme.of(context).textTheme.bodyText1!.copyWith(
-                                    color: Colors.grey,
+                                    color: Colors.white,
                                   ),
                         ),
                         const SizedBox(

@@ -1,28 +1,26 @@
-
 import 'package:flutter/material.dart';
 
 import '../../../core/components/appText.dart';
 
 class OneCountryOrLanguage extends StatelessWidget {
-  Function onTap;
-  String countryOrLanguageName;
-  Color countryOrLanguageColor;
-  Color textColor;
+  final Color textColor;
+  final void Function()? onTap;
+  final String countryOrLanguageName;
+  final Color countryOrLanguageColor;
 
-  OneCountryOrLanguage({super.key,
+  const OneCountryOrLanguage({
+    super.key,
     required this.onTap,
+    required this.textColor,
     required this.countryOrLanguageName,
     required this.countryOrLanguageColor,
-    required this.textColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       borderRadius: BorderRadius.circular(20),
-      onTap: () {
-        onTap();
-      },
+      onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(
           horizontal: 20,
@@ -33,10 +31,10 @@ class OneCountryOrLanguage extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
         ),
         child: DefaultText(
+          fontWeight: FontWeight.w300,
           text: countryOrLanguageName,
           textColor: textColor,
           fontSize: 20,
-          fontWeight: FontWeight.w300,
         ),
       ),
     );

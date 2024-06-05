@@ -61,22 +61,21 @@ class RegisterController extends Cubit<RegisterStates> {
       password: passwordController.text,
     )
         .then((value) {
-      upLoadUser(
-        name: nameController.text,
-        uId: value.user!.uid,
-        email: email,
-        phone: phoneController.text,
+      final model = UserModel(
         age: 10,
+        email: email,
+        country: "eg",
+        language: "ar",
         bio: "Love Reading!",
+        uId: value.user!.uid,
+        name: nameController.text,
+        phone: phoneController.text,
         image:
             "https://thumbs.dreamstime.com/b/newspaper-good-news-coffee-25063632.jpg",
-        language: "ar",
-        country: "eg",
       );
-      CacheHelper.saveData(
-        key: "country",
-        value: "eg",
-      );
+
+      upLoadUser(model);
+      CacheHelper.saveData(key: "country", value: "eg");
       emit(CreateUserSuccessState());
     }).catchError((error) {
       print(
@@ -85,44 +84,15 @@ class RegisterController extends Cubit<RegisterStates> {
     });
   }
 
-  void upLoadUser({
-    required String name,
-    required String uId,
-    required String email,
-    required String phone,
-    required String image,
-    required String bio,
-    required int age,
-    required String language,
-    required String country,
-  }) {
+  void upLoadUser(UserModel model) {
     emit(RegisterUpLoadUserLoadingState());
-    UserModel userModel = UserModel(
-      name: name,
-      email: email,
-      phone: phone,
-      country: country,
-      language: language,
-      uId: uId,
-      bio: bio,
-      age: age,
-      image: image,
-    );
     firStore
         .collection("users")
-        .doc(uId)
-        .set(userModel.toJson())
+        .doc(model.uId)
+        .set(model.toJson())
         .then((value) {})
         .catchError((error) {
       emit(RegisterUpLoadUserErrorState(error: error.toString()));
     });
-
-    /*firStore.collection("profileImage").doc(uId).set({
-      "profileImage": image,
-    }).then((value) {
-      emit(RegisterUpLoadUserSuccessState());
-    }).catchError((error) {
-      emit(RegisterUpLoadUserErrorState(error: error.toString()));
-    });*/
   }
 }

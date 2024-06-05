@@ -5,10 +5,10 @@ import 'package:news/screens/Home/view.dart';
 import '../../core/components/navigateAndFinish.dart';
 
 class SplashScreen extends StatefulWidget {
-  const SplashScreen({Key? key}) : super(key: key);
+  const SplashScreen({super.key});
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  State<SplashScreen> createState() => _SplashScreenState();
 }
 
 class _SplashScreenState extends State<SplashScreen> {
@@ -16,25 +16,23 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(
-        const Duration(
-          seconds: 3,
-        ), () {
-      navigateAndFinish(
+      const Duration(seconds: 3),
+      () => navigateAndFinish(
         context: context,
         widget: const HomeLayOutScreen(),
-      );
-    });
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: ,
+      backgroundColor: const Color(0XFFfb7f01),
       body: Stack(
         children: [
           Center(
             child: Image.asset(
-              'assets/images/readingApaper.jpg',
+              'assets/images/logo.jpeg',
               height: 200,
               width: 200,
             ),

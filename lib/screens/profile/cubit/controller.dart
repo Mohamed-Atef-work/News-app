@@ -48,16 +48,6 @@ class ProfileController extends Cubit<ProfileStates> {
     }
   }
 
-  /*void getRemoteImage() {
-    fireStore.collection("profileImages").doc(uId).get().then((value) {
-      userModel!.image = UserModel.imageFromJson(value.data()!);
-      emit(ProfileGetUserDataSuccessState());
-    }).catchError((getProfileImageError) {
-      print("The error is --------------->${getProfileImageError.toString()}");
-      emit(ProfileGetUserDataErrorState());
-    });
-  }*/
-
   UserModel? userModel;
 
   void getUser({required String uId}) {
@@ -71,15 +61,6 @@ class ProfileController extends Cubit<ProfileStates> {
       print("The error is --------------->${error.toString()}");
       emit(ProfileGetUserDataErrorState());
     });
-
-    // get profileImage
-    /*fireStore.collection("profileImages").doc(uId).get().then((value) {
-      userModel!.image = UserModel.imageFromJson(value.data()!);
-      emit(ProfileGetUserDataSuccessState());
-    }).catchError((getProfileImageError) {
-      print("The error is --------------->${getProfileImageError.toString()}");
-      emit(ProfileGetUserDataErrorState());
-    });*/
   }
 
   void upLoadImage() {
@@ -111,8 +92,6 @@ class ProfileController extends Cubit<ProfileStates> {
       emit(UpDateProfileErrorState());
     });
   }
-
-  //AppController? appController;
 
   void upDateUser({
     required String name,
@@ -146,20 +125,10 @@ class ProfileController extends Cubit<ProfileStates> {
         .doc(uId)
         .set(userModel.toJson())
         .then((value) {
-      //appController!.userModel = userModel;
-
       emit(UpDateProfileSuccessState());
     }).catchError((error) {
       emit(UpDateProfileErrorState());
     });
-
-    /*firStore.collection("profileImage").doc(uId).set({
-      "profileImage": image,
-    }).then((value) {
-      emit(UpLoadUserSuccessState());
-    }).catchError((error) {
-      emit(UpLoadUserErrorState(error: error.toString()));
-    });*/
   }
 
   late int languageIndex = searchForTheIndex(
@@ -185,14 +154,8 @@ class ProfileController extends Cubit<ProfileStates> {
     }
     if (list == languages) {
       language = languages[searchedIndex];
-      /*CacheHelper.saveData(
-        key: "language",
-        value: language,
-      );*/
-      //userModel!.language = languages[searchedIndex];
     } else if (list == countries) {
       country = countries[searchedIndex];
-      //userModel!.country = country[searchedIndex];
 
       print("The country is ----------->${country}");
       CacheHelper.saveData(
@@ -203,7 +166,6 @@ class ProfileController extends Cubit<ProfileStates> {
     return searchedIndex;
   }
 
-//  Change the country of the application and the languages then.
   void chooseTheLanguage({
     required int index,
   }) {
@@ -222,8 +184,6 @@ class ProfileController extends Cubit<ProfileStates> {
     countryIndex = index;
     country = countries[index];
     userModel!.country = countries[index];
-    //isCountryChanged = true;
-    //CacheHelper.saveData(key: "country", value: country);
     print("the country is ------------>${country}");
     emit(ProfileChooseCountryOrLanguageState());
   }

@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:news/core/cubit/controller.dart';
 import 'package:news/l10n/app_localizations.dart';
-import 'package:news/screens/HomeScreens/drawer/view.dart';
+import 'package:news/screens/home_screens/drawer/view.dart';
 import 'package:news/screens/profile/cubit/states.dart';
+import '../../core/components/appOutLinedButton.dart';
 import '../../core/components/appTextFormField.dart';
 import '../../core/components/appText.dart';
 import '../../core/dataBase/local/constants.dart';
+import '../../core/styles/colors.dart';
 import 'cubit/controller.dart';
 import 'widgets/countriesAndLanguages.dart';
 
@@ -15,20 +17,19 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localization = AppLocalizations.of(context)!;
+    final appController = AppController.get(context);
     return BlocProvider(
-      create: (context) => ProfileController()
-        ..getUser(
-          uId: uId!,
-        ),
+      create: (_) => ProfileController()..getUser(uId: uId!),
       child: BlocConsumer<ProfileController, ProfileStates>(
         listener: (context, state) {
           if (state is UpDateProfileSuccessState) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: DefaultText(
-                  text: AppLocalizations.of(context)!.success,
-                  textAlign: TextAlign.center,
                   fontSize: 20,
+                  text: localization.success,
+                  textAlign: TextAlign.center,
                 ),
                 duration: const Duration(seconds: 3),
               ),
@@ -36,37 +37,32 @@ class ProfileScreen extends StatelessWidget {
           }
         },
         builder: (context, state) {
-          if (ProfileController.get(context).userModel != null) {
-            ProfileController.get(context).nameController.text =
-                ProfileController.get(context).userModel!.name;
-            ProfileController.get(context).emailController.text =
-                ProfileController.get(context).userModel!.email;
-            ProfileController.get(context).phoneController.text =
-                ProfileController.get(context).userModel!.phone;
+          final profileController = ProfileController.get(context);
+
+          if (profileController.userModel != null) {
+            profileController.nameController.text =
+                profileController.userModel!.name;
+            profileController.emailController.text =
+                profileController.userModel!.email;
+            profileController.phoneController.text =
+                profileController.userModel!.phone;
           }
           return Scaffold(
             appBar: AppBar(
-              title: DefaultText(
-                text: AppLocalizations.of(context)!.profile,
-                fontSize: 24,
-              ),
+              title: DefaultText(text: localization.profile, fontSize: 24),
             ),
-            drawer: AppDrawer(),
-            body: ProfileController.get(context).userModel != null
+            drawer: const AppDrawer(),
+            body: profileController.userModel != null
                 ? Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
                       child: Form(
-                        key: ProfileController.get(context).profileFormKey,
+                        key: profileController.profileFormKey,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const SizedBox(
-                              height: 15,
-                            ),
+                            const SizedBox(height: 15),
                             Align(
                               alignment: Alignment.center,
                               child: Stack(
@@ -74,49 +70,28 @@ class ProfileScreen extends StatelessWidget {
                                 children: [
                                   CircleAvatar(
                                     radius: 70,
-                                    foregroundImage:
-                                        ProfileController.get(context)
-                                                    .profileImage !=
-                                                null
-                                            ? Image.file(
-                                                ProfileController.get(context)
-                                                    .profileImage!,
-                                              ).image
-                                            : NetworkImage(
-                                                ProfileController.get(context)
-                                                    .userModel!
-                                                    .image,
-                                              ),
                                     backgroundColor: Colors.transparent,
+                                    foregroundImage:
+                                        profileController.profileImage != null
+                                            ? Image.file(profileController
+                                                    .profileImage!)
+                                                .image
+                                            : NetworkImage(profileController
+                                                .userModel!.image),
                                   ),
                                   CircleAvatar(
                                     backgroundColor: Colors.grey.shade100,
                                     child: GestureDetector(
-                                      onTap: () {
-                                        ProfileController.get(context)
-                                            .getLocalImage();
-                                      },
-                                      child: const Icon(
-                                        Icons.photo_camera,
-                                      ),
+                                      onTap: () =>
+                                          profileController.getLocalImage(),
+                                      child: const Icon(Icons.photo_camera),
                                     ),
                                   ),
                                 ],
                               ),
                             ),
-                            if (ProfileController.get(context).profileImage !=
-                                null)
-                              const SizedBox(
-                                height: 5,
-                              ),
-                            /*DefaultText(
-                              text: ProfileController.get(context)
-                                  .userModel!
-                                  .name,
-                              fontSize: 16,
-                              textColor: const Color(0xFF4A4B4D),
-                              fontWeight: FontWeight.bold,
-                            ),*/
+                            if (profileController.profileImage != null)
+                              const SizedBox(height: 5),
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Row(
@@ -128,17 +103,15 @@ class ProfileScreen extends StatelessWidget {
                                         //mainAxisSize: ,
                                         children: [
                                           Text(
-                                            AppController.get(context)
-                                                .bookMarkedArticles
-                                                .length
+                                            appController
+                                                .bookMarkedArticles.length
                                                 .toString(),
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyText1,
                                           ),
                                           Text(
-                                            AppLocalizations.of(context)!
-                                                .bookMarkedArticles,
+                                            localization.bookMarkedArticles,
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .caption,
@@ -155,267 +128,152 @@ class ProfileScreen extends StatelessWidget {
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: DefaultText(
-                                  text: ProfileController.get(context)
-                                      .userModel!
-                                      .email,
+                                  text: profileController.userModel!.email,
                                   fontSize: 16,
-                                  textColor: const Color(0xFF4A4B4D),
                                   fontWeight: FontWeight.bold,
+                                  textColor: const Color(0xFF4A4B4D),
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              height: 15,
-                            ),
+                            const SizedBox(height: 15),
                             CustomTextField(
                               onSubmitted: (value) {},
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return AppLocalizations.of(context)!
-                                      .pleaseEnterYourName;
+                                  return localization.pleaseEnterYourName;
                                 }
                               },
-                              keyboardType: TextInputType.text,
                               prefixIcon: Icons.person,
-                              labelText: AppLocalizations.of(context)!.name,
-                              controller:
-                                  ProfileController.get(context).nameController,
+                              labelText: localization.name,
+                              keyboardType: TextInputType.text,
+                              controller: profileController.nameController,
                             ),
                             const SizedBox(
                               height: 15,
                             ),
-                            /*CustomTextField(
-                              onSubmitted: (value) {},
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Please enter the Email";
-                                }
-
-                                return null;
-                              },
-                              keyboardType: TextInputType.emailAddress,
-                              prefixIcon: Icons.email,
-                              labelText: "Email",
-                              controller: ProfileController.get(context)
-                                  .emailController,
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),*/
                             CustomTextField(
-                              onSubmitted: (value) {},
+                              onSubmitted: (_) {},
                               validator: (value) {
                                 if (value!.isEmpty) {
-                                  return AppLocalizations.of(context)!
-                                      .pleaseEnterYourPhone;
+                                  return localization.pleaseEnterYourPhone;
                                 }
 
                                 return null;
                               },
                               keyboardType: TextInputType.phone,
                               prefixIcon: Icons.phone,
-                              labelText: AppLocalizations.of(context)!.phone,
-                              controller: ProfileController.get(context)
-                                  .phoneController,
+                              labelText: localization.phone,
+                              controller: profileController.phoneController,
                             ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            /*CustomTextField(
-                              obscureText:
-                                  ProfileController.get(context).isSecured,
-                              onSubmitted: (value) {},
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Please enter the Password";
-                                }
-                                return null;
-                              },
-                              keyboardType: TextInputType.visiblePassword,
-                              prefixIcon: Icons.password,
-                              suffix: GestureDetector(
-                                onTap: () {
-                                  ProfileController.get(context).isSecured =
-                                      !ProfileController.get(context).isSecured;
-                                },
-                                child: Icon(
-                                  ProfileController.get(context).isSecured ==
-                                          false
-                                      ? Icons.remove_red_eye
-                                      : Icons.visibility_off_outlined,
-                                ),
-                              ),
-                              labelText: "Password",
-                            ),*/
-                            const SizedBox(
-                              height: 15,
-                            ),
+                            const SizedBox(height: 15),
+                            const SizedBox(height: 15),
                             DefaultText(
-                              text: AppLocalizations.of(context)!.country,
+                              text: localization.country,
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
                               textColor: const Color(0xFF4A4B4D),
                             ),
-                            const SizedBox(
-                              height: 15,
+                            const SizedBox(height: 15),
+                            SizedBox(
+                              height: 50,
+                              child: ListView.separated(
+                                scrollDirection: Axis.horizontal,
+                                physics: const BouncingScrollPhysics(),
+                                itemCount: profileController.countries.length,
+                                itemBuilder: (_, index) => OneCountryOrLanguage(
+                                  onTap: () => profileController
+                                      .chooseTheCountry(index: index),
+                                  countryOrLanguageName:
+                                      profileController.countries[index],
+                                  countryOrLanguageColor:
+                                      profileController.countryIndex == index
+                                          ? Colors.deepOrange
+                                          : Colors.grey.shade100,
+                                  textColor:
+                                      profileController.countryIndex == index
+                                          ? Colors.white
+                                          : Colors.deepOrange,
+                                ),
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(width: 5),
+                              ),
                             ),
+                            const SizedBox(height: 15),
+                            DefaultText(
+                              fontSize: 18,
+                              text: localization.language,
+                              fontWeight: FontWeight.bold,
+                              textColor: const Color(0xFF4A4B4D),
+                            ),
+                            const SizedBox(height: 15),
                             SizedBox(
                               height: 50,
                               child: ListView.separated(
                                 physics: const BouncingScrollPhysics(),
                                 scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) =>
-                                    OneCountryOrLanguage(
-                                  onTap: () {
-                                    ProfileController.get(context)
-                                        .chooseTheCountry(index: index);
-                                  },
+                                itemBuilder: (_, index) => OneCountryOrLanguage(
+                                  onTap: () => profileController
+                                      .chooseTheLanguage(index: index),
                                   countryOrLanguageName:
-                                      ProfileController.get(context)
-                                          .countries[index],
+                                      profileController.languages[index],
                                   countryOrLanguageColor:
-                                      ProfileController.get(context)
-                                                  .countryIndex ==
-                                              index
+                                      profileController.languageIndex == index
                                           ? Colors.deepOrange
                                           : Colors.grey.shade100,
-                                  textColor: ProfileController.get(context)
-                                              .countryIndex ==
-                                          index
-                                      ? Colors.white
-                                      : Colors.deepOrange,
+                                  textColor:
+                                      profileController.languageIndex == index
+                                          ? Colors.white
+                                          : Colors.deepOrange,
                                 ),
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(
-                                  width: 5,
-                                ),
-                                itemCount: ProfileController.get(context)
-                                    .countries
-                                    .length,
+                                separatorBuilder: (_, __) =>
+                                    const SizedBox(width: 5),
+                                itemCount: profileController.languages.length,
                               ),
                             ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            DefaultText(
-                              text: AppLocalizations.of(context)!.language,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              textColor: const Color(0xFF4A4B4D),
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
-                            SizedBox(
-                              height: 50,
-                              child: ListView.separated(
-                                physics: const BouncingScrollPhysics(),
-                                scrollDirection: Axis.horizontal,
-                                itemBuilder: (context, index) =>
-                                    OneCountryOrLanguage(
-                                  onTap: () {
-                                    ProfileController.get(context)
-                                        .chooseTheLanguage(index: index);
-                                  },
-                                  countryOrLanguageName:
-                                      ProfileController.get(context)
-                                          .languages[index],
-                                  countryOrLanguageColor:
-                                      ProfileController.get(context)
-                                                  .languageIndex ==
-                                              index
-                                          ? Colors.deepOrange
-                                          : Colors.grey.shade100,
-                                  textColor: ProfileController.get(context)
-                                              .languageIndex ==
-                                          index
-                                      ? Colors.white
-                                      : Colors.deepOrange,
-                                ),
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(
-                                  width: 5,
-                                ),
-                                itemCount: ProfileController.get(context)
-                                    .languages
-                                    .length,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            ),
+                            const SizedBox(height: 15),
                             if (state is UpDateProfileLoadingState)
                               const Padding(
                                 padding: EdgeInsets.all(8.0),
                                 child: LinearProgressIndicator(),
                               ),
-                            OutlinedButton(
+                            AppOutlinedButton(
                               onPressed: () {
-                                if (ProfileController.get(context)
-                                    .profileFormKey
-                                    .currentState!
+                                if (profileController
+                                    .profileFormKey.currentState!
                                     .validate()) {
-                                  if (ProfileController.get(context)
-                                          .profileImage !=
-                                      null) {
-                                    ProfileController.get(context)
-                                        .upLoadImage();
+                                  if (profileController.profileImage != null) {
+                                    profileController.upLoadImage();
                                   } else {
-                                    ProfileController.get(context).upDateUser(
-                                      name: ProfileController.get(context)
-                                          .nameController
-                                          .text,
+                                    profileController.upDateUser(
+                                      name:
+                                          profileController.nameController.text,
                                       uId: uId!,
-                                      email: ProfileController.get(context)
-                                          .userModel!
-                                          .email,
-                                      phone: ProfileController.get(context)
-                                          .phoneController
-                                          .text,
-                                      image: ProfileController.get(context)
-                                          .userModel!
-                                          .image,
-                                      age: ProfileController.get(context)
-                                          .userModel!
-                                          .age,
-                                      bio: ProfileController.get(context)
-                                          .userModel!
-                                          .bio,
-                                      language: ProfileController.get(context)
-                                              .languages[
-                                          ProfileController.get(context)
-                                              .languageIndex],
-                                      country: ProfileController.get(context)
-                                              .countries[
-                                          ProfileController.get(context)
-                                              .countryIndex],
+                                      email: profileController.userModel!.email,
+                                      phone: profileController
+                                          .phoneController.text,
+                                      image: profileController.userModel!.image,
+                                      age: profileController.userModel!.age,
+                                      bio: profileController.userModel!.bio,
+                                      language: profileController.languages[
+                                          profileController.languageIndex],
+                                      country: profileController.countries[
+                                          profileController.countryIndex],
                                     );
                                   }
-                                  AppController.get(context).userModel =
-                                      ProfileController.get(context).userModel;
+                                  appController.userModel =
+                                      profileController.userModel;
                                   print("good");
                                   // change the app language.
                                   if (isLanguageChanged) {
-                                    AppController.get(context)
-                                        .changeAppLangState();
+                                    appController.changeAppLangState();
                                     isLanguageChanged = false;
                                   }
                                 }
                               },
-                              style: OutlinedButton.styleFrom(
-                                backgroundColor: const Color(0xFFFC6011),
-                              ),
-                              child: Text(
-                                AppLocalizations.of(context)!.save,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.white,
-                                ),
-                              ),
+                              text: localization.save,
+                              height: 53,
                             ),
-                            const SizedBox(
-                              height: 15,
-                            ),
+                            const SizedBox(height: 15),
                           ],
                         ),
                       ),

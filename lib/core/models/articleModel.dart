@@ -1,9 +1,4 @@
 class ArticlesResponse {
-  /*ArticlesResponse({
-    required this.status,
-    required this.totalResults,
-    required this.articles,
-  });*/
   late final String status;
   late final int totalResults;
   late final List<Articles> articles;
@@ -14,27 +9,9 @@ class ArticlesResponse {
     articles =
         List.from(json['articles']).map((e) => Articles.fromJson(e)).toList();
   }
-
-  /*Map<String, dynamic> toJson() {
-    final _data = <String, dynamic>{};
-    _data['status'] = status;
-    _data['totalResults'] = totalResults;
-    _data['articles'] = articles.map((e) => e.toJson()).toList();
-    return _data;
-  }*/
 }
 
 class Articles {
-  /*Articles({
-    required this.source,
-    required this.author,
-    required this.title,
-    required this.description,
-    required this.url,
-    required this.urlToImage,
-    required this.publishedAt,
-    required this.content,
-  });*/
   late final Source? source;
   late final String? author;
   late final String? title;
@@ -76,10 +53,6 @@ class Articles {
 }
 
 class Source {
-  /*Source({
-    required this.id,
-    required this.name,
-  });*/
   late final String? id;
   late final String? name;
 

@@ -5,10 +5,10 @@ import '../../core/components/navigateAndFinish.dart';
 import '../onBoarding/view.dart';
 
 class SplashScreenThenOnBoarding extends StatefulWidget {
-  const SplashScreenThenOnBoarding({Key? key}) : super(key: key);
+  const SplashScreenThenOnBoarding({super.key});
 
   @override
-  _SplashScreenThenOnBoardingState createState() =>
+  State<SplashScreenThenOnBoarding> createState() =>
       _SplashScreenThenOnBoardingState();
 }
 
@@ -18,25 +18,23 @@ class _SplashScreenThenOnBoardingState
   void initState() {
     super.initState();
     Timer(
-        const Duration(
-          seconds: 3,
-        ), () {
-      navigateAndFinish(
+      const Duration(seconds: 3),
+      () => navigateAndFinish(
         context: context,
         widget: const OnBoardingScreen(),
-      );
-    });
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: ,
+      backgroundColor: const Color(0XFFfb7f01),
       body: Stack(
         children: [
           Center(
             child: Image.asset(
-              'assets/images/readingApaper.jpg',
+              'assets/images/logo.jpeg',
               height: 200,
               width: 200,
             ),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:news/core/components/navigateAndFinish.dart';
 import 'package:news/core/cubit/controller.dart';
-import 'package:news/screens/HomeScreens/drawer/widgets/drawerItem.dart';
+import 'package:news/core/styles/colors.dart';
+import 'package:news/screens/home_screens/drawer/widgets/drawerItem.dart';
 
 import 'controller.dart';
 
@@ -17,7 +18,7 @@ class AppDrawer extends StatelessWidget {
 
     return SafeArea(
       child: Drawer(
-        backgroundColor: Colors.grey.shade300,
+        backgroundColor: primaryColor,
         child: Column(
           children: [
             Padding(
@@ -32,9 +33,7 @@ class AppDrawer extends StatelessWidget {
                       fontSize: 18,
                     ),
                   ),
-                  const SizedBox(
-                    width: 10,
-                  ),
+                  const SizedBox(width: 10),
                   CircleAvatar(
                     radius: 30,
                     foregroundImage: NetworkImage(
@@ -46,15 +45,14 @@ class AppDrawer extends StatelessWidget {
             Container(
               height: 300,
               clipBehavior: Clip.antiAlias,
-              padding: const EdgeInsets.symmetric(
-                vertical: 15,
-              ),
+              padding: const EdgeInsets.symmetric(vertical: 15),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(40),
-                color: Colors.grey.shade200,
+                color: secondaryColor,
               ),
               child: ListView.separated(
                 shrinkWrap: true,
+                itemCount: controller.titles.length,
                 itemBuilder: (context, index) => DrawerItem(
                   title: controller.titles[index],
                   icon: controller.icons[index],
@@ -69,12 +67,7 @@ class AppDrawer extends StatelessWidget {
                     }
                   },
                 ),
-                separatorBuilder: (context, index) => const Divider(
-                  color: Colors.grey,
-                  endIndent: 30,
-                  indent: 30,
-                ),
-                itemCount: controller.titles.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 20),
               ),
             ),
           ],

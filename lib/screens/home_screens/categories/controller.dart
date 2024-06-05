@@ -18,14 +18,12 @@ class CategoriesController {
     AppLocalizations.of(context)!.science,
   ];
   late List<String> images = [
-    "assets/images/basketball.jpg",
-    "assets/images/entertainment.jpg",
-    "assets/images/health.jpg",
-    "assets/images/technology.jpg",
-    "assets/images/science.jpg",
+    "assets/images/sport.jpeg",
+    "assets/images/entertainment.jpeg",
+    "assets/images/health.jpeg",
+    "assets/images/technology.jpeg",
+    "assets/images/science.jpeg",
   ];
 
-  CategoriesController({
-    required this.context,
-  });
+  CategoriesController({required this.context});
 }

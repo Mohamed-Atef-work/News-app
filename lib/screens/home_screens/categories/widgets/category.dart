@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:news/core/components/appText.dart';
 import 'package:news/core/components/navigator.dart';
-import 'package:news/screens/HomeScreens/oneCategoryArticles/view.dart';
+import 'package:news/core/styles/colors.dart';
+import 'package:news/screens/home_screens/oneCategoryArticles/view.dart';
 
 class CategoryItem extends StatelessWidget {
-  late final String image;
-  late final String categoryForTitle;
-  late final String categoryForSearch;
+  final String image;
+  final String categoryForTitle;
+  final String categoryForSearch;
 
-  CategoryItem({
+  const CategoryItem({
+    super.key,
     required this.image,
     required this.categoryForTitle,
     required this.categoryForSearch,
@@ -32,18 +34,14 @@ class CategoryItem extends StatelessWidget {
       ),
       label: Row(
         children: [
-          const SizedBox(
-            width: 10,
-          ),
+          const SizedBox(width: 10),
           DefaultText(
             text: categoryForTitle,
-            fontWeight: FontWeight.bold,
             textColor: Colors.black,
+            fontWeight: FontWeight.bold,
           ),
           const Spacer(),
-          const Icon(
-            Icons.arrow_forward_ios,
-          ),
+          const Icon(Icons.arrow_forward_ios,color: Colors.black,),
         ],
       ),
     );
